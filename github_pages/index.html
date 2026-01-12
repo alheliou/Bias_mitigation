@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis for unbiased Machine Learning</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+
+        .nav button {
+            padding: 8px 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .nav button:hover {
+            background: #0056b3;
+        }
+
+        .page {
+            display: none;
+            padding: 20px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        input[type="number"] {
+            width: 70px;
+        }
+
+        .metrics {
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+
+        .good {
+            color: green;
+        }
+
+        .bad {
+            color: red;
+        }
+
+        .config-box {
+            background: #f5f5fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            margin-bottom: 6px;
+        }
+
+        #resultsHistoryTable {
+            margin-top: 10px;
+        }
+
+        #resultsHistoryTable th,
+        #resultsHistoryTable td {
+            font-size: 0.95em;
+        }
+
+        .base-rate-table {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 380px;
+        }
+
+        .base-rate-table td,
+        .base-rate-table th {
+            border: 1px solid #ccc;
+            padding: 4px 7px;
+            font-size: 0.98em;
+        }
+
+        .metric-formula {
+            color: #555;
+            font-size: 0.97em;
+            margin-bottom: 5px;
+        }
+
+        .metrics-label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .chart-box {
+            width: 45%;
+            min-width: 300px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        select,
+        input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .history {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .history-plots {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .history-plot {
+            width: 300px;
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .history-plot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: white;
+        }
+
+        .highlight {
+            background-color: rgba(255, 165, 0, 0.7);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Data Analysis for unbiased Machine Learning</h1>
+    </div>
+    <div class="nav">
+        <button onclick="showPage('missing-values')">Missing Values Game</button>
+        <button onclick="showPage('bias-mitigation')">Bias Mitigation Game</button>
+    </div>
+
+    <div id="missing-values" class="page active">
+        <div class="container">
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/seedrandom@3.0.5/seedrandom.min.js"></script>
+            <h2>Missing Values Game</h2>
+            <p>Explore how missing values affect distributions and statistics.</p>
+            <!-- Paste your Missing Values Game code here -->
+            <div class="controls">
+                <div>
+                    <label for="distribution">Distribution: </label>
+                    <select id="distribution">
+                        <option value="normal">Normal</option>
+                        <option value="laplace">Laplace</option>
+                        <option value="uniform">Uniform</option>
+                    </select>
+                    <button id="draw">Draw Distribution</button>
+                </div>
+
+                <div>
+                    <label for="remove">Remove: </label>
+                    <select id="remove">
+                        <option value="lower10">Lower 10%</option>
+                        <option value="upper10">Upper 10%</option>
+                        <option value="random10">Random 10%</option>
+                        <option value="lower25">Lower 25%</option>
+                        <option value="upper25">Upper 25%</option>
+                        <option value="random25">Random 25%</option>
+                    </select>
+                    <button id="remove-values">Remove Values</button>
+                </div>
+
+                <div>
+                    <label for="replace">Replace with: </label>
+                    <select id="replace">
+                        <option value="mean">Mean</option>
+                        <option value="median">Median</option>
+                        <option value="random">Random</option>
+                    </select>
+                    <button id="replace-values">Replace Missing Values</button>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-box">
+                    <h3>Index vs Value</h3>
+                    <canvas id="scatter-chart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Density Plot</h3>
+                    <canvas id="density-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="stats" id="stats"></div>
+
+            <div class="history">
+                <h3>History</h3>
+                <div id="history-list"></div>
+            </div>
+
+            <script>
+                // Global variables
+                let data = [];
+                let originalData = [];
+                let missingIndices = [];
+                let scatterChart = null;
+                let densityChart = null;
+                let stepHistory = [];
+                let seed = 42;
+                Math.seedrandom(seed);
+                let lastActionIndices = [];
+
+                // DOM elements
+                const distributionSelect = document.getElementById('distribution');
+                const removeSelect = document.getElementById('remove');
+                const replaceSelect = document.getElementById('replace');
+                const drawButton = document.getElementById('draw');
+                const removeButton = document.getElementById('remove-values');
+                const replaceButton = document.getElementById('replace-values');
+                const statsDiv = document.getElementById('stats');
+                const historyList = document.getElementById('history-list');
+                const scatterCanvas = document.getElementById('scatter-chart');
+                const densityCanvas = document.getElementById('density-chart');
+                const scatterCtx = scatterCanvas.getContext('2d');
+                const densityCtx = densityCanvas.getContext('2d');
+
+                // Generate data for a given distribution
+                function generateData(distribution, size = 200) {
+                    let values = [];
+                    if (distribution === 'normal') {
+                        for (let i = 0; i < size; i++) {
+                            let u = 0, v = 0;
+                            while (u === 0) u = Math.random();
+                            while (v === 0) v = Math.random();
+                            values.push(Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v) * 3 + 5);
+                        }
+                    } else if (distribution === 'laplace') {
+                        for (let i = 0; i < size; i++) {
+                            let u = Math.random() - 0.5;
+                            values.push(-Math.sign(u) * Math.log(1 - 2 * Math.abs(u)) * 2 + 5);
+                        }
+                    } else if (distribution === 'uniform') {
+                        for (let i = 0; i < size; i++) {
+                            values.push(Math.random() * 10);
+                        }
+                    }
+                    return values;
+                }
+
+                // Calculate statistics
+                function calculateStats(values) {
+                    values = values.filter(v => v !== null);
+                    if (values.length === 0) return { min: 0, max: 0, mean: 0, q1: 0, median: 0, q3: 0 };
+                    values.sort((a, b) => a - b);
+                    const min = values[0];
+                    const max = values[values.length - 1];
+                    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+                    const q1 = values[Math.floor(values.length * 0.25)];
+                    const median = values[Math.floor(values.length * 0.5)];
+                    const q3 = values[Math.floor(values.length * 0.75)];
+                    return { min, max, mean, q1, median, q3 };
+                }
+
+                // Compute histogram bins
+                function computeHistogram(values, binSize = 0.5) {
+                    const filtered = values.filter(v => v !== null);
+                    if (filtered.length === 0) return { bins: [], counts: [] };
+                    const min = Math.min(...filtered);
+                    const max = Math.max(...filtered);
+                    const bins = [];
+                    const counts = [];
+                    for (let i = min; i <= max; i += binSize) {
+                        bins.push(i);
+                        counts.push(0);
+                    }
+                    filtered.forEach(v => {
+                        const binIndex = Math.floor((v - min) / binSize);
+                        if (binIndex >= 0 && binIndex < counts.length) {
+                            counts[binIndex]++;
+                        }
+                    });
+                    return { bins, counts };
+                }
+
+                // Remove values according to the selected method
+                function removeValues(method) {
+                    const n = data.length;
+                    const k = method.includes('10') ? Math.floor(n * 0.1) : Math.floor(n * 0.25);
+                    missingIndices = [];
+                    let sortedIndices = Array.from({ length: n }, (_, i) => i);
+                    let sortedData = [...data].sort((a, b) => a - b);
+
+                    if (method.startsWith('lower')) {
+                        let lowerValues = sortedData.slice(0, k);
+                        missingIndices = sortedIndices.filter(i => lowerValues.includes(data[i])).slice(0, k);
+                    } else if (method.startsWith('upper')) {
+                        let upperValues = sortedData.slice(-k);
+                        missingIndices = sortedIndices.filter(i => upperValues.includes(data[i])).slice(0, k);
+                    } else if (method.startsWith('random')) {
+                        missingIndices = Array.from({ length: k }, () => Math.floor(Math.random() * n));
+                    }
+                    // Mark as missing
+                    missingIndices.forEach(i => data[i] = null);
+                    lastActionIndices = [...missingIndices];
+                    return missingIndices;
+                }
+
+                // Replace missing values
+                function replaceMissingValues(method) {
+                    if (missingIndices.length === 0) return;
+                    const values = data.filter(v => v !== null);
+                    if (values.length === 0) return;
+                    const stats = calculateStats(values);
+                    lastActionIndices = [...missingIndices];
+                    missingIndices.forEach(i => {
+                        if (method === 'mean') {
+                            data[i] = stats.mean;
+                        } else if (method === 'median') {
+                            data[i] = stats.median;
+                        } else if (method === 'random') {
+                            data[i] = values[Math.floor(Math.random() * values.length)];
+                        }
+                    });
+                    return lastActionIndices;
+                }
+
+                // Save current state to history
+                function saveToHistory(action, indices) {
+                    const stats = calculateStats(data);
+                    // Use setTimeout to ensure charts are rendered before capturing
+                    setTimeout(() => {
+                        const scatterImg = scatterCanvas.toDataURL();
+                        const densityImg = densityCanvas.toDataURL();
+                        const step = {
+                            action,
+                            indices,
+                            data: [...data],
+                            stats,
+                            scatterImg,
+                            densityImg,
+                            timestamp: new Date().toLocaleTimeString()
+                        };
+                        console.log(scatterImg);
+                        console.log(densityImg);
+                        stepHistory.push(step);
+                        updateHistoryList();
+                    }, 100);
+                }
+
+                // Update history list in DOM
+                function updateHistoryList() {
+                    historyList.innerHTML = stepHistory.map((step, i) => `
+                <div class="history-item">
+                    <strong>Step ${i + 1}: ${step.action}</strong> (${step.timestamp})<br>
+                    <div class="history-plots">
+                        <div class="history-plot">
+                            <img src="${step.scatterImg}" alt="Scatter plot">
+                        </div>
+                        <div class="history-plot">
+                            <img src="${step.densityImg}" alt="Density plot">
+                        </div>
+                    </div>
+                    <strong>Statistics:</strong><br>
+                    Min: ${step.stats.min.toFixed(2)}<br>
+                    Max: ${step.stats.max.toFixed(2)}<br>
+                    Mean: ${step.stats.mean.toFixed(2)}<br>
+                    Q1: ${step.stats.q1.toFixed(2)}<br>
+                    Median: ${step.stats.median.toFixed(2)}<br>
+                    Q3: ${step.stats.q3.toFixed(2)}
+                </div>
+            `).join('');
+                }
+
+                // Update charts and stats
+                function updateCharts(highlightIndices = []) {
+                    const stats = calculateStats(data);
+                    statsDiv.innerHTML = `
+                <strong>Statistics:</strong><br>
+                Min: ${stats.min.toFixed(2)}<br>
+                Max: ${stats.max.toFixed(2)}<br>
+                Mean: ${stats.mean.toFixed(2)}<br>
+                Q1: ${stats.q1.toFixed(2)}<br>
+                Median: ${stats.median.toFixed(2)}<br>
+                Q3: ${stats.q3.toFixed(2)}
+            `;
+
+                    // Scatter plot: Index vs Value
+                    const labels = data.map((_, i) => i);
+                    const values = data.map(v => v === null ? NaN : v);
+                    const backgroundColors = data.map((v, i) =>
+                        v === null ? 'rgba(255, 99, 132, 0.5)' :
+                            highlightIndices.includes(i) ? 'rgba(255, 165, 0, 0.7)' :
+                                'rgba(54, 162, 235, 0.5)'
+                    );
+
+                    if (scatterChart) scatterChart.destroy();
+                    scatterChart = new Chart(scatterCtx, {
+                        type: 'scatter',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Values',
+                                data: values.map((v, i) => ({ x: i, y: v })),
+                                backgroundColor: backgroundColors,
+                                pointRadius: 3,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => `Value: ${context.raw.y?.toFixed(2) ?? 'Missing'}`
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: { title: { display: true, text: 'Index' } },
+                                y: { title: { display: true, text: 'Value' } }
+                            }
+                        }
+                    });
+
+                    // Density plot: Value vs Density
+                    const { bins, counts } = computeHistogram(data);
+                    if (densityChart) densityChart.destroy();
+                    densityChart = new Chart(densityCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: bins.map(b => b.toFixed(1)),
+                            datasets: [{
+                                label: 'Density',
+                                data: counts,
+                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => `Count: ${context.raw}`
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: { title: { display: true, text: 'Value' } },
+                                y: { title: { display: true, text: 'Count' } }
+                            }
+                        }
+                    });
+                }
+
+                // Event listeners
+                drawButton.addEventListener('click', () => {
+                    const dist = distributionSelect.value;
+                    data = generateData(dist);
+                    originalData = [...data];
+                    missingIndices = [];
+                    stepHistory = [];
+                    updateHistoryList();
+                    updateCharts();
+                    saveToHistory('New distribution: ' + dist, []);
+                });
+
+                removeButton.addEventListener('click', () => {
+                    const method = removeSelect.value;
+                    const indices = removeValues(method);
+                    updateCharts(indices);
+                    saveToHistory('Removed: ' + method, indices);
+                });
+
+                replaceButton.addEventListener('click', () => {
+                    const method = replaceSelect.value;
+                    const indices = replaceMissingValues(method);
+                    updateCharts(indices);
+                    saveToHistory('Replaced with: ' + method, indices);
+                });
+
+                // Initialize
+                console.log("initialisation normal distribution")
+                data = generateData('normal');
+                originalData = [...data];
+                updateCharts();
+                saveToHistory('New distribution: normal', []);
+            </script>
+        </div>
+    </div>
+    </div>
+
+    <div id="bias-mitigation" class="page">
+        <div class="container">
+            <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+
+            <h2>Bias Mitigation Game</h2>
+            <p>Learn how to mitigate bias in datasets.</p>
+            <!-- Paste your Bias Mitigation Game code here -->
+            <div class="config-box">
+                <label>
+                    Choose a dataset:
+                    <select id="datasetSelector" onchange="onDatasetChange()"></select>
+                </label>
+            </div>
+
+            <div class="dataset-preview">
+                <h3>Dataset Preview</h3>
+                <table id="datasetPreviewTable">
+                    <thead>
+                        <tr>
+                            <!-- Headers will be added dynamically -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="config-box">
+                <label>
+                    Choose the sensitive column:
+                    <select id="sensitiveColumnSelector" onchange="onSensitiveColumnChange()"></select>
+                </label>
+                <br><br>
+                <label>
+                    Choose the truth column:
+                    <select id="truthColumnSelector" onchange="onTruthColumnChange()"></select>
+                </label>
+                <br><br>
+                <div id="sensitiveConfig"></div>
+                <label>
+                    Which value of the truth is considered <b>favorable</b>?
+                    <select id="favorableTruthValue" onchange="refreshTable()"></select>
+                </label>
+            </div>
+
+            <form id="weightsForm" onsubmit="event.preventDefault(); calculateMetrics();">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sensitive</th>
+                            <th>Truth</th>
+                            <th>Nb. samples</th>
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody id="datasetTable">
+                        <!-- Aggregated rows will be displayed here -->
+                    </tbody>
+                </table>
+                <button type="submit">Calculate Metrics</button>
+            </form>
+
+            <div class="metrics">
+                <div class="metrics-label">Metric Formulas:</div>
+                <div class="metric-formula"><strong>Base Rate (group):</strong> \( BR_A = \frac{N_{\text{favorable},
+                    A}}{N_A} \)</div>
+                <div class="metric-formula"><strong>Disparate Impact:</strong> \( DI = \frac{P(\text{favorable} |
+                    \text{privileged})}{P(\text{favorable} | \text{non-privileged})} \)</div>
+                <div class="metric-formula"><strong>Demographic Parity Difference:</strong> \( DPD = \max_A BR_A -
+                    \min_A BR_A \)</div>
+                <div class="metric-formula"><strong>Statistical Parity Difference:</strong> \( SPD =
+                    \overline{BR}_{\text{priv}} - \overline{BR}_{\text{non-priv}} \)</div>
+
+                <hr>
+
+                <strong>Disparate Impact:</strong> <span id="disparateImpact"></span><br>
+                <strong>Demographic Parity Difference:</strong> <span id="demParity"></span><br>
+                <strong>Statistical Parity Difference:</strong> <span id="statParityDiff"></span>
+                <div id="baseRates"></div>
+            </div>
+
+            <div style="margin-top:30px;">
+                <h3>Results History</h3>
+                <button type="button" onclick="downloadHistoryCSV()">Download CSV</button>
+                <button type="button" onclick="eraseHistory()">Erase</button>
+                <table id="resultsHistoryTable" style="margin-top:10px;display:none;">
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>Dataset</th>
+                            <th>Privileged</th>
+                            <th>Favorable Truth</th>
+                            <th>Disparate Impact</th>
+                            <th>Dem. Parity Diff.</th>
+                            <th>Stat. Parity Diff.</th>
+                            <th>Base Rates</th>
+                            <th>Weights Used</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <script>
+                // Embedded datasets
+                const datasets = {
+                    "Salary": [
+                        { "Gender": "M", "Ethnicity": "Native", "Highest degree": "H. school", "Job type": "Board", "Salary": "High" },
+                        { "Gender": "M", "Ethnicity": "Native", "Univ": "H. school", "Job type": "Board", "Salary": "High" },
+                        { "Gender": "M", "Ethnicity": "Native", "Highest degree": "H. school", "Job type": "Board", "Salary": "High" },
+                        { "Gender": "M", "Ethnicity": "Non-nat", "Highest degree": "H. school", "Job type": "Healthcare", "Salary": "High" },
+                        { "Gender": "M", "Ethnicity": "Non-nat", "Univ": "H. school", "Job type": "Healthcare", "Salary": "Low" },
+                        { "Gender": "F", "Ethnicity": "Non-nat", "Univ": "H. school", "Job type": "Education", "Salary": "Low" },
+                        { "Gender": "F", "Ethnicity": "Native", "Highest degree": "H. school", "Job type": "Education", "Salary": "Low" },
+                        { "Gender": "F", "Ethnicity": "Native", "None": "H. school", "Job type": "Healthcare", "Salary": "High" },
+                        { "Gender": "F", "Ethnicity": "Non-nat", "Univ": "H. school", "Job type": "Education", "Salary": "Low" },
+                        { "Gender": "F", "Ethnicity": "Native", "Highest degree": "H. school", "Job type": "Board", "Salary": "High" },
+                    ],
+                };
+
+                let currentDatasetName = "";
+                let currentDataset = [];
+                let sensitiveValues = [];
+                let privilegedValues = [];
+                let allTruthValues = [];
+                let favorableTruth = null;
+                let truthColumn = null;
+                let sensitiveColumn = null;
+                let aggregatedData = [];
+                let resultsHistory = [];
+
+                function onDatasetChange() {
+                    currentDatasetName = document.getElementById('datasetSelector').value;
+                    currentDataset = datasets[currentDatasetName];
+                    displayDatasetPreview();
+                    populateColumnSelectors();
+                }
+
+                function displayDatasetPreview() {
+                    const table = document.getElementById("datasetPreviewTable");
+                    const thead = table.querySelector("thead tr");
+                    const tbody = table.querySelector("tbody");
+
+                    // Clear existing content
+                    thead.innerHTML = "";
+                    tbody.innerHTML = "";
+
+                    // Add headers
+                    if (currentDataset.length > 0) {
+                        const headers = Object.keys(currentDataset[0]);
+                        headers.forEach(header => {
+                            thead.innerHTML += `<th>${header}</th>`;
+                        });
+
+                        // Add data rows
+                        currentDataset.forEach(row => {
+                            let tr = "<tr>";
+                            headers.forEach(header => {
+                                tr += `<td>${row[header]}</td>`;
+                            });
+                            tr += "</tr>";
+                            tbody.innerHTML += tr;
+                        });
+                    }
+                }
+
+                function populateColumnSelectors() {
+                    const sensitiveSelector = document.getElementById('sensitiveColumnSelector');
+                    const truthSelector = document.getElementById('truthColumnSelector');
+                    sensitiveSelector.innerHTML = '';
+                    truthSelector.innerHTML = '';
+                    const columns = Object.keys(currentDataset[0]);
+                    columns.forEach(col => {
+                        sensitiveSelector.innerHTML += `<option value="${col}">${col}</option>`;
+                        truthSelector.innerHTML += `<option value="${col}">${col}</option>`;
+                    });
+                    sensitiveColumn = columns[0];
+                    truthColumn = columns[1];
+                    onSensitiveColumnChange();
+                }
+
+                function onSensitiveColumnChange() {
+                    sensitiveColumn = document.getElementById('sensitiveColumnSelector').value;
+                    const sensSet = new Set();
+                    currentDataset.forEach(row => {
+                        sensSet.add(row[sensitiveColumn]);
+                    });
+                    sensitiveValues = Array.from(sensSet);
+                    renderSensitiveCheckboxes();
+                    onTruthColumnChange();
+                }
+
+                function onTruthColumnChange() {
+                    truthColumn = document.getElementById('truthColumnSelector').value;
+                    const truthSet = new Set();
+                    currentDataset.forEach(row => {
+                        truthSet.add(row[truthColumn]);
+                    });
+                    allTruthValues = Array.from(truthSet);
+                    favorableTruth = allTruthValues[0];
+                    renderFavorableSelector();
+                    refreshTable();
+                }
+
+                function renderSensitiveCheckboxes() {
+                    const container = document.getElementById('sensitiveConfig');
+                    container.innerHTML = '<div class="checkbox-group">Select the <b>privileged</b> values:</div>';
+                    sensitiveValues.forEach(val => {
+                        const id = `priv-${val}`;
+                        container.innerHTML += `
+      <label for="${id}" style="margin-right:15px;">
+        <input type="checkbox" id="${id}" name="privValues" value="${val}" onchange="onCheckboxChange()">${val}
+      </label>
+    `;
+                    });
+                    privilegedValues = [];
+                }
+
+                function onCheckboxChange() {
+                    privilegedValues = [];
+                    document.querySelectorAll('input[name="privValues"]:checked').forEach(cb => {
+                        privilegedValues.push(cb.value);
+                    });
+                }
+
+                function renderFavorableSelector() {
+                    const select = document.getElementById('favorableTruthValue');
+                    select.innerHTML = "";
+                    allTruthValues.forEach(v => {
+                        select.innerHTML += `<option value="${v}">${v}</option>`;
+                    });
+                    select.value = favorableTruth;
+                    select.onchange = function () {
+                        favorableTruth = select.value;
+                        refreshTable();
+                    }
+                }
+
+                function aggregateData() {
+                    const aggregation = {};
+                    currentDataset.forEach(row => {
+                        const key = `${row[sensitiveColumn]}_${row[truthColumn]}`;
+                        aggregation[key] = (aggregation[key] || 0) + 1;
+                    });
+
+                    aggregatedData = Object.entries(aggregation).map(([key, count]) => {
+                        const [sensitive, truth] = key.split('_');
+                        return { sensitive, truth, count };
+                    });
+                }
+
+                function refreshTable() {
+                    aggregateData();
+                    const table = document.getElementById("datasetTable");
+                    table.innerHTML = "";
+
+                    aggregatedData.forEach((row, idx) => {
+                        table.innerHTML += `
+      <tr>
+        <td>${row.sensitive}</td>
+        <td>${row.truth}</td>
+        <td>${row.count}</td>
+        <td>
+          <input
+            type="number"
+            name="weight${idx}"
+            value="1"
+            min="0"
+            step="0.1"
+          >
+        </td>
+      </tr>
+    `;
+                    });
+                }
+
+                function calculateMetrics() {
+                    if (!privilegedValues.length) {
+                        alert('Please select at least one privileged value!');
+                        return;
+                    }
+                    if (!favorableTruth) {
+                        alert("Please choose a favorable truth value.");
+                        return;
+                    }
+
+                    const weights = [];
+                    document.querySelectorAll('input[type="number"]').forEach(input => {
+                        weights.push(parseFloat(input.value));
+                    });
+
+                    // Calculate group sums and positives
+                    const groupSums = {};
+                    const groupPositives = {};
+                    aggregatedData.forEach((row, idx) => {
+                        const sensitive = row.sensitive;
+                        const truth = row.truth;
+                        const wcount = weights[idx] * row.count;
+
+                        groupSums[sensitive] = (groupSums[sensitive] || 0) + wcount;
+                        if (truth === favorableTruth) {
+                            groupPositives[sensitive] = (groupPositives[sensitive] || 0) + wcount;
+                        }
+                    });
+
+                    // Base rate per group
+                    const groupRates = {};
+                    sensitiveValues.forEach(g => {
+                        groupRates[g] = (groupPositives[g] || 0) / (groupSums[g] || 1e-12);
+                    });
+
+                    // Disparate Impact
+                    let privRates = privilegedValues.map(v => groupRates[v]);
+                    let nonPrivRates = sensitiveValues.filter(v => !privilegedValues.includes(v)).map(v => groupRates[v]);
+                    let disparateImpact = (privRates.length && nonPrivRates.length) ?
+                        (Math.min(...privRates) / Math.max(...nonPrivRates)) :
+                        0;
+
+                    // Demographic Parity Difference
+                    const rates = Object.values(groupRates);
+                    const demParity = Math.max(...rates) - Math.min(...rates);
+
+                    // Statistical Parity Difference
+                    let avgPrivRate = privRates.length ? privRates.reduce((a, b) => a + b, 0) / privRates.length : 0;
+                    let avgNonPrivRate = nonPrivRates.length ? nonPrivRates.reduce((a, b) => a + b, 0) / nonPrivRates.length : 0;
+                    let statParityDiff = avgPrivRate - avgNonPrivRate;
+
+                    // Display results
+                    displayMetrics({ disparateImpact, demParity, statParityDiff, baseRates: groupRates }, weights);
+                }
+
+                function displayMetrics(metrics, weights) {
+                    const disEl = document.getElementById("disparateImpact");
+                    const demEl = document.getElementById("demParity");
+                    const statEl = document.getElementById("statParityDiff");
+
+                    disEl.textContent = metrics.disparateImpact.toFixed(3);
+                    disEl.className = (metrics.disparateImpact >= 0.8 && metrics.disparateImpact <= 1.25) ? 'good' : 'bad';
+
+                    demEl.textContent = metrics.demParity.toFixed(3);
+                    demEl.className = (metrics.demParity < 0.2) ? 'good' : 'bad';
+
+                    statEl.textContent = metrics.statParityDiff.toFixed(3);
+                    statEl.className = (Math.abs(metrics.statParityDiff) < 0.2) ? 'good' : 'bad';
+
+                    let baseRateHTML = `<table class='base-rate-table'><tr><th>Group</th><th>Base Rate</th></tr>`;
+                    for (const [group, rate] of Object.entries(metrics.baseRates)) {
+                        baseRateHTML += `<tr><td>${group}</td><td>${rate.toFixed(3)}</td></tr>`;
+                    }
+                    baseRateHTML += '</table>';
+                    document.getElementById("baseRates").innerHTML = "<strong>Base Rates by Group:</strong><br>" + baseRateHTML;
+
+                    saveToHistoryBM(metrics, weights);
+                }
+
+                function saveToHistoryBM(metrics, weights) {
+                    const now = new Date();
+                    resultsHistory.push({
+                        date: now.toLocaleString(),
+                        dataset: currentDatasetName,
+                        privileged: privilegedValues.slice(),
+                        favorableTruth: favorableTruth,
+                        disparateImpact: metrics.disparateImpact.toFixed(3),
+                        demParity: metrics.demParity.toFixed(3),
+                        statParityDiff: metrics.statParityDiff.toFixed(3),
+                        baseRates: JSON.stringify(metrics.baseRates),
+                        weights: weights.slice()
+                    });
+                    updateHistoryTable();
+                }
+
+                function updateHistoryTable() {
+                    const tbl = document.getElementById('resultsHistoryTable');
+                    const tbody = tbl.querySelector('tbody');
+                    if (resultsHistory.length === 0) {
+                        tbl.style.display = "none";
+                        tbody.innerHTML = "";
+                        return;
+                    }
+                    tbl.style.display = "";
+                    tbody.innerHTML = "";
+                    resultsHistory.forEach(row => {
+                        tbody.innerHTML += `<tr>
+      <td>${row.date}</td>
+      <td>${row.dataset}</td>
+      <td>${row.privileged.join(',')}</td>
+      <td>${row.favorableTruth}</td>
+      <td>${row.disparateImpact}</td>
+      <td>${row.demParity}</td>
+      <td>${row.statParityDiff}</td>
+      <td>${row.baseRates}</td>
+      <td>${row.weights.join(',')}</td>
+    </tr>`;
+                    });
+                }
+
+                function eraseHistory() {
+                    if (!confirm("Clear results history?")) return;
+                    resultsHistory = [];
+                    updateHistoryTable();
+                }
+
+                function downloadHistoryCSV() {
+                    if (resultsHistory.length === 0) {
+                        alert("No data to download!");
+                        return;
+                    }
+                    const headers = [
+                        "Date/Time", "Dataset", "Privileged", "Favorable Truth",
+                        "Disparate Impact", "Dem. Parity Diff.", "Stat. Parity Diff.",
+                        "Base Rates", "Weights Used"
+                    ];
+                    const rows = [headers.join(",")];
+                    resultsHistory.forEach(row => {
+                        rows.push([
+                            `"${row.date}"`, `"${row.dataset}"`, `"${row.privileged.join(';')}"`,
+                            `"${row.favorableTruth}"`, row.disparateImpact, row.demParity,
+                            row.statParityDiff, `"${row.baseRates}"`, `"${row.weights.join(';')}"`
+                        ].join(","));
+                    });
+                    const csvContent = rows.join("\r\n");
+                    const blob = new Blob([csvContent], { type: "text/csv" });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = "bias_metrics_history.csv";
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(function () { document.body.removeChild(link); }, 500);
+                }
+
+                // Initialize the dataset selector
+                function buildDatasetSelector() {
+                    const sel = document.getElementById('datasetSelector');
+                    sel.innerHTML = "";
+                    Object.keys(datasets).forEach(dsname => {
+                        sel.innerHTML += `<option value="${dsname}">${dsname}</option>`;
+                    });
+                    sel.value = Object.keys(datasets)[0];
+                    onDatasetChange();
+                }
+
+                buildDatasetSelector();
+            </script>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            // Show the selected page
+            document.getElementById(pageId).classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
