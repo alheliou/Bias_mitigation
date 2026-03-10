@@ -4,7 +4,7 @@ from torchvision.models import resnet18, ResNet18_Weights
 import torch
 from torch.utils.data import DataLoader, WeightedRandomSampler
 from torch.nn.functional import cross_entropy
-from torchmetrics.classification import BinaryConfusionMatrix
+from torchmetrics.classification import BinaryConfusionMatrix, ConfusionMatrix
 from torchvision.transforms.v2 import (
     Compose,
     Resize,
@@ -140,19 +140,26 @@ class ChestXRayClassifier(LightningModule):
         self.model = make_model(pth_path, nb_classes)
         self.adamax = adamax
         self.cosine = cosine
-        self.bcm = BinaryConfusionMatrix()
+        self.nb_classes = nb_classes
+        if nb_classes==2:
+            self.cm = BinaryConfusionMatrix()
+        else:
+            self.cm = ConfusionMatrix(task="multiclass", num_classes=self.nb_classes)
 
     def plot_cm(self, logits, labels, name, batch_idx):
-        self.bcm(torch.argmax(logits, dim=1), labels)
+        self.cm(torch.argmax(logits, dim=1), labels)
         fig, ax = plt.subplots(figsize=(10, 10))
-        self.bcm.plot(ax=ax, labels=["malade", "sain"])
+        if self.nb_classes==2:
+            self.cm.plot(ax=ax, labels=["malade", "sain"])
+        else:
+            self.cm.plot(ax=ax)
         buf = io.BytesIO()
         fig.savefig(buf, format="png", bbox_inches="tight")
         plt.close()
         buf.seek(0)
         im = Compose([ToImage(), ToDtype(torch.float32, scale=True)])(Image.open(buf))
         self.logger.experiment.add_image(name, im, batch_idx)
-        self.bcm.reset()
+        self.cm.reset()
 
     def forward(self, x):
         return self.model(x)
